@@ -1,24 +1,10 @@
 import { readInput } from "../utils/readInput";
 
-interface Rolling {
-  val: number;
-  startIndex: number;
-}
-
 const SLIDING_WINDOW_SIZE = 3;
 
 const data = readInput();
 
 const parsedData = data.split("\r\n").map(Number);
-
-const r1: Rolling = {
-  val: 0,
-  startIndex: 0,
-};
-const r2: Rolling = {
-  val: 0,
-  startIndex: 1,
-};
 
 function getCumulOfNValues(
   startIndex: number,
