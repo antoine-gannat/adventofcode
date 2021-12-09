@@ -11,3 +11,9 @@ export function readInput(): string {
   });
   return data;
 }
+
+export function readInputAsLines(): string[] {
+  const rawData = readInput();
+
+  return rawData.split("\r\n");
+}
