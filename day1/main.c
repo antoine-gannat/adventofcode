@@ -3,8 +3,6 @@
 
 #define RAW_NUMBER_BUFFER_SIZE 10
 #define ELVES_BUFFER_SIZE 3
-#define EOL '\n'
-#define END_OF_FILE '\0'
 
 // update the top elves array
 static void saveElf(int currentElfSum, int *topElves)
