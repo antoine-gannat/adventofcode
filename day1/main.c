@@ -1,56 +1,10 @@
-#include <fcntl.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "../utils/utils.h"
 
-#define BUFFER_SIZE 1024
 #define RAW_NUMBER_BUFFER_SIZE 10
 #define ELVES_BUFFER_SIZE 3
 #define EOL '\n'
 #define END_OF_FILE '\0'
-
-const size_t readSize = BUFFER_SIZE;
-
-static char *readFile(const char *path)
-{
-  size_t bytesRead = 0;
-  size_t bufferSize = readSize;
-  char readBuffer[BUFFER_SIZE + 1];
-  int fd = open(path, O_RDONLY);
-
-  if (fd == -1)
-  {
-    return NULL;
-  }
-
-  char *buffer = malloc(readSize * sizeof(char));
-  if (buffer == NULL)
-  {
-    return NULL;
-  }
-
-  memset(buffer, 0, readSize);
-  do
-  {
-    memset(readBuffer, 0, readSize + 1);
-
-    bytesRead = read(fd, readBuffer, readSize);
-    if (bytesRead == -1)
-    {
-      free(buffer);
-      return NULL;
-    }
-    bufferSize += bytesRead;
-    buffer = realloc(buffer, bufferSize);
-    if (buffer == NULL)
-    {
-      return NULL;
-    }
-    strcat(buffer, readBuffer);
-  } while (bytesRead == readSize);
-  close(fd);
-  return buffer;
-}
 
 // update the top elves array
 static void saveElf(int currentElfSum, int *topElves)
