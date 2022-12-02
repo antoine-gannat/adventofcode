@@ -1,41 +1,54 @@
 #include <stdio.h>
 #include "../utils/utils.h"
 
-static int getChoicePoints(const char playerChoice)
+#define ROCK 'A'
+#define PAPER 'B'
+#define SCISSORS 'C'
+
+#define WIN 1
+#define LOSE -1
+#define DRAW 0
+
+static int getChoicePoints(const char opponentChoice, const int outcome)
 {
-  switch (playerChoice)
+  switch (opponentChoice)
   {
-  case 'X':
-    return 1;
-  case 'Y':
-    return 2;
-  case 'Z':
-    return 3;
+  case ROCK:
+    // rock to draw
+    // paper to win,
+    // scissors to lose,
+    return outcome == DRAW ? 1 : outcome == WIN ? 2
+                                                : 3;
+  case PAPER:
+    // rock to lose
+    // paper to draw
+    // scissors to win
+    return outcome == DRAW ? 2 : outcome == WIN ? 3
+                                                : 1;
+  case SCISSORS:
+    // rock to win
+    // paper to lose
+    // scissors to draw
+    return outcome == DRAW ? 3 : outcome == WIN ? 1
+                                                : 2;
   default:
     return 0;
   }
 }
 
-static int isWinner(const char opponentChoice, const char playerChoice)
+static int getOutcome(const char playerChoice)
 {
-  // to compare the choices, we need to convert them to numbers
-  if (opponentChoice + (int)('X' - 'A') == playerChoice)
+  switch (playerChoice)
   {
+  case 'X':
+    return LOSE;
+  case 'Y':
+    return DRAW;
+  case 'Z':
+    return WIN;
+  default:
     return 0;
   }
-  if (opponentChoice == 'A')
-  {
-    return playerChoice == 'Y' ? 1 : -1;
-  }
-  if (opponentChoice == 'B')
-  {
-    return playerChoice == 'Z' ? 1 : -1;
-  }
-  if (opponentChoice == 'C')
-  {
-    return playerChoice == 'X' ? 1 : -1;
-  }
-  return 0;
 }
 
 static int findSolution(const char *fileContent)
@@ -48,23 +61,23 @@ static int findSolution(const char *fileContent)
     const char opponentChoice = fileContent[i];
     const char playerChoice = fileContent[i + 2]; // +1 is space, +2 is player choice
 
-    const outcome = isWinner(opponentChoice, playerChoice);
+    const outcome = getOutcome(playerChoice);
     switch (outcome)
     {
     case 1:
-      // win
+      // should win
       totalPoints += 6;
       break;
     case -1:
-      // lose, no points
+      // should lose
       break;
     default:
-      // tie
+      // should tie
       totalPoints += 3;
       break;
     }
     // finally, add the points from the choice
-    totalPoints += getChoicePoints(playerChoice);
+    totalPoints += getChoicePoints(opponentChoice, outcome);
     i += 4; // +1 is space, +2 is player choice, +3 is EOL
   }
   return totalPoints;
