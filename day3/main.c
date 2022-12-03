@@ -37,7 +37,7 @@ static int checkForDuplicate(char *currentLine)
       if (currentLine[lineIndex] == currentLine[j])
       {
         // replace current match with 0 to not re-analyze it later on.
-        currentLine[j] = '+';
+        currentLine[j] = 0;
         // if match is already found, leave
         if (found)
         {
@@ -82,6 +82,7 @@ int main()
       currentLine[strlen(currentLine)] = fileContent[i];
     }
   }
+  // add last one
   totalSum += checkForDuplicate(currentLine);
 
   printf("Total sum: %d", totalSum);

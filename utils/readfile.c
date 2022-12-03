@@ -28,7 +28,7 @@ char *readFile(const char *path)
     bufferSize += bytesRead;
   }
   buffer = realloc(buffer, (bufferSize) * sizeof(char));
-  buffer[bufferSize] = '\0';
+  buffer[bufferSize] = '\0'; // add null terminator
 
   if (bytesRead == -1)
   {
