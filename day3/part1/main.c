@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../utils/utils.h"
+#include "../../utils/utils.h"
 
 #define UPPERCASE_PRIORITY_MAGIC 38 // A(65) - 38 == 27
 #define LOWERCASE_PRIORITY_MAGIC 96 // a(97) - 96 == 1
@@ -61,9 +61,7 @@ int main()
     return 1;
   }
 
-  int totalLines = 0;
   int totalSum = 0;
-  int i = 0;
   char currentLine[CURRENT_LINE_BUFFER_SIZE];
   memset(currentLine, 0, CURRENT_LINE_BUFFER_SIZE);
   // for each line
