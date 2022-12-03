@@ -68,7 +68,6 @@ int main()
       // add to list
       const int itemPriority = getPriority(fileContent[i]);
       const int itemIndex = itemPriority - 1;
-      // printf("%c %d\n", fileContent[i], itemPriority);
       if (itemPriority != -1 && items[itemIndex].lastFoundOnLine != lineCount)
       {
         // use priority as index
