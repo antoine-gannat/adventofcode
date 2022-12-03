@@ -1,16 +1,18 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <fcntl.h>
+#include <string.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 5
 
-const size_t readSize = BUFFER_SIZE;
+const size_t readSize = BUFFER_SIZE - 1;
 
 char *readFile(const char *path)
 {
   size_t bytesRead = 0;
-  size_t bufferSize = readSize;
-  char readBuffer[BUFFER_SIZE + 1];
-  int fd = open(path, O_RDONLY);
+  size_t bufferSize = 0;
+  char readBuffer[BUFFER_SIZE];
+  const int fd = open(path, O_RDONLY);
 
   if (fd == -1)
   {
@@ -18,30 +20,21 @@ char *readFile(const char *path)
   }
 
   char *buffer = malloc(readSize * sizeof(char));
-  if (buffer == NULL)
+  memset(buffer, 0, readSize * sizeof(char));
+  while ((bytesRead = read(fd, readBuffer, readSize)) > 0)
   {
+    buffer = realloc(buffer, (bufferSize + bytesRead) * sizeof(char));
+    strncpy(buffer + bufferSize, readBuffer, bytesRead);
+    bufferSize += bytesRead;
+  }
+  buffer = realloc(buffer, (bufferSize) * sizeof(char));
+  buffer[bufferSize] = '\0';
+
+  if (bytesRead == -1)
+  {
+    printf("Error reading file.");
     return NULL;
   }
-
-  memset(buffer, 0, readSize);
-  do
-  {
-    memset(readBuffer, 0, readSize + 1);
-
-    bytesRead = read(fd, readBuffer, readSize);
-    if (bytesRead == -1)
-    {
-      free(buffer);
-      return NULL;
-    }
-    bufferSize += bytesRead;
-    buffer = realloc(buffer, bufferSize);
-    if (buffer == NULL)
-    {
-      return NULL;
-    }
-    strcat(buffer, readBuffer);
-  } while (bytesRead == readSize);
   close(fd);
   return buffer;
 }
