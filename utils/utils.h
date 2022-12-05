@@ -7,3 +7,4 @@
 #define FALSE 0
 
 char *readFile(const char *path);
+char *readNextLine(const char *fileContent);
