@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <string.h>
 
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 100
 
 const size_t readSize = BUFFER_SIZE - 1;
 
@@ -23,9 +23,10 @@ char *readFile(const char *path)
   memset(buffer, 0, readSize * sizeof(char));
   while ((bytesRead = read(fd, readBuffer, readSize)) > 0)
   {
-    buffer = realloc(buffer, (bufferSize + bytesRead) * sizeof(char));
+    buffer = realloc(buffer, (bufferSize + bytesRead + 1) * sizeof(char));
     strncpy(buffer + bufferSize, readBuffer, bytesRead);
     bufferSize += bytesRead;
+    buffer[bufferSize] = '\0'; // add null terminator
   }
   buffer = realloc(buffer, (bufferSize) * sizeof(char));
   buffer[bufferSize] = '\0'; // add null terminator
