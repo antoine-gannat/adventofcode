@@ -6,8 +6,8 @@
 #define FILE_NAME_LENGTH 15
 #define MAX_EL_PER_DIR 100
 
-#define FILE_TYPE 0
-#define DIR_TYPE 1
+#define DISK_SIZE 70000000
+#define UPDATE_SIZE 30000000
 
 typedef struct s_file
 {
@@ -23,33 +23,40 @@ typedef struct s_dir
   struct s_dir *children[MAX_EL_PER_DIR];
   unsigned short nbFiles;
   unsigned short nbChildren;
+  unsigned int size;
 } t_dir;
 
 t_dir filesystem; // root
 
 t_dir *currentDir = NULL;
 
-static void displayDir(t_dir *dir, const unsigned short level)
+unsigned int solution = 0;
+
+static void findSolution(t_dir *dir, const unsigned int minSizeToFreeUp)
 {
-  // create indent
-  char indent[50];
-  memset(indent, 0, 50);
-  memset(indent, ' ', level * 2);
-  // display files
-  for (int i = 0; i < dir->nbFiles; i++)
+  if (dir->size > minSizeToFreeUp && (dir->size < solution || solution == 0))
   {
-    printf("%s[%d] %s\n", indent, dir->files[i].size, dir->files[i].name);
+    solution = dir->size;
   }
-  if (dir->nbChildren == 0)
-  {
-    return;
-  }
-  // display dirs
   for (int i = 0; i < dir->nbChildren; i++)
   {
-    // display dir name
-    printf("%s[d] %s\n", indent, dir->children[i]->name);
-    displayDir(dir->children[i], level + 1);
+    findSolution(dir->children[i], minSizeToFreeUp);
+  }
+}
+
+static void updateDirSize(t_dir *dir)
+{
+  dir->size = 0;
+  // recursively find the size of children then update self
+  for (int i = 0; i < dir->nbChildren; i++)
+  {
+    updateDirSize(dir->children[i]);
+    dir->size += dir->children[i]->size;
+  }
+  // add the size of files
+  for (int i = 0; i < dir->nbFiles; i++)
+  {
+    dir->size += dir->files[i].size;
   }
 }
 
@@ -67,22 +74,21 @@ static void initDir(t_dir *dir, const char *name, t_dir *parent)
   // set file/children counters
   dir->nbFiles = 0;
   dir->nbChildren = 0;
+  dir->size = 0;
 }
 
-static void addElToCurrentDir(void *el, const unsigned short type)
+static void addNewDir(const char *name)
 {
-  if (type == FILE_TYPE)
-  {
-    currentDir->files[currentDir->nbFiles] = *(t_file *)el;
-    currentDir->nbFiles++;
-  }
-  else
-  {
-    t_dir *newDir = malloc(sizeof(t_dir));
-    initDir(newDir, (char *)el, currentDir);
-    currentDir->children[currentDir->nbChildren] = newDir;
-    currentDir->nbChildren++;
-  }
+  t_dir *newDir = malloc(sizeof(t_dir));
+  initDir(newDir, name, currentDir);
+  currentDir->children[currentDir->nbChildren] = newDir;
+  currentDir->nbChildren++;
+}
+
+static void addNewFile(t_file el)
+{
+  currentDir->files[currentDir->nbFiles] = el;
+  currentDir->nbFiles++;
 }
 
 static void processCommandResponse(const char *rawOutput)
@@ -94,12 +100,12 @@ static void processCommandResponse(const char *rawOutput)
   {
     char name[FILE_NAME_LENGTH] = {0};
     sscanf(rawOutput, "dir %s", name);
-    addElToCurrentDir(&name, DIR_TYPE);
+    addNewDir(name);
   }
   else
   {
     // process file
-    addElToCurrentDir(&file, FILE_TYPE);
+    addNewFile(file);
   }
 }
 
@@ -171,7 +177,9 @@ int main()
     free(line);
   }
 
-  displayDir(&filesystem, 0);
+  updateDirSize(&filesystem);
+  findSolution(&filesystem, UPDATE_SIZE - (DISK_SIZE - filesystem.size));
+  printf("solution: %u\n", solution);
   free(fileContent);
   return 0;
 }
