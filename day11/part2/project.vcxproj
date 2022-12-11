@@ -19,10 +19,10 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ItemGroup>
-    <ClCompile Include="main.c;../../utils/readfile.c;../../utils/readline.c" />
+    <ClCompile Include="main.c;infiniteMath.c;../../utils/readfile.c;../../utils/readline.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="../../utils/utils.h" />
+    <ClInclude Include="../../utils/utils.h;header.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Targets" />
 </Project>
