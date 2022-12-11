@@ -4,7 +4,7 @@
 #include "../../utils/utils.h"
 #include "header.h"
 
-#define ROUND_COUNT 20
+#define ROUND_COUNT 10000
 
 #define ITEM_LIST_SIZE 200
 #define MONKEY_LIST_SIZE 10
@@ -92,7 +92,6 @@ static void throwItem(t_monkey *currentMonkey, unsigned long targetMonkeyId)
   // find the target monkey
   t_monkey *targetMonkey = &monkeys[targetMonkeyId];
 
-  printf("throw item %s from monkey %d to monkey %d\n", currentMonkey->items[0], currentMonkey->id, targetMonkey->id);
   // throw the item to target monkey
   targetMonkey->items[targetMonkey->itemCount] = strdup(currentMonkey->items[0]);
   targetMonkey->itemCount++;
@@ -124,14 +123,12 @@ static void evalItem(t_monkey *monkey)
   if (monkey->operationType == OPERATION_TYPE_ADD)
   {
     char *newItem = add((const char *)monkey->items[0], (const char *)operationValue);
-    printf("adding %s to %s = %s\n", monkey->items[0], operationValue, newItem);
     free(monkey->items[0]);
     monkey->items[0] = newItem;
   }
   else if (monkey->operationType == OPERATION_TYPE_MULTIPLY)
   {
     char *newItem = multiply((const char *)monkey->items[0], (const char *)operationValue);
-    printf("multiplying %s to %s = %s\n", monkey->items[0], operationValue, newItem);
     free(monkey->items[0]);
     monkey->items[0] = newItem;
   }
@@ -147,7 +144,6 @@ static void evalItem(t_monkey *monkey)
     // if false, throw to test failure monkey
     throwItem(monkey, monkey->testFailureMonkey);
   }
-  printf("eval done\n\n");
   free(testResult);
 }
 
@@ -206,6 +202,14 @@ int main()
   for (unsigned long i = 0; i < ROUND_COUNT; i++)
   {
     runRound();
+    if (i % 100 == 0)
+    {
+      printf("Round %u\n", i);
+      if (monkeys[0].itemCount != 0)
+      {
+        printf("%s\n", monkeys[0].items[0]);
+      }
+    }
   }
   // now find the 2 monkeys with most inspection
   unsigned long maxInspectionCount[2] = {0, 0};
