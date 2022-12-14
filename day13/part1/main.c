@@ -17,30 +17,6 @@ typedef struct s_packet
   void *parent;
 } t_packet;
 
-static void displayPacket(t_packet *p)
-{
-  if (p->type == PACKET_TYPE_NUMBER)
-  {
-    printf("%d", p->value);
-  }
-  else if (p->type == PACKET_TYPE_ARRAY)
-  {
-    printf("[");
-    for (int i = 0; i < MAX_CHILDREN; i++)
-    {
-      if (p->children[i] != NULL)
-      {
-        if (i > 0)
-        {
-          printf(",");
-        }
-        displayPacket(p->children[i]);
-      }
-    }
-    printf("]");
-  }
-}
-
 static void freePacket(t_packet *p)
 {
   for (int i = 0; i < MAX_CHILDREN; i++)
@@ -185,11 +161,8 @@ int main()
       pairCount++;
       if (isInRightOrder(pair1, pair2))
       {
-        printf("Pair %d is in right order\n", pairCount);
         solution += pairCount;
       }
-      else
-        printf("Pair %d is NOT in right order\n", pairCount);
       freePacket(pair1);
       freePacket(pair2);
       pair1 = packetFactory(PACKET_TYPE_ARRAY);
