@@ -182,10 +182,6 @@ int main()
     // reset, analyze new pair
     if (strlen(line) == 0)
     {
-      // printf("Comparing:\n");
-      // displayPacket(pair1);
-      // displayPacket(pair2);
-      // printf("\n");
       pairCount++;
       if (isInRightOrder(pair1, pair2))
       {
