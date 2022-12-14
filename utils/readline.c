@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "utils.h"
 
-#define LINE_BUFFER_SIZE 200 // max length of a line
+#define LINE_BUFFER_SIZE 300 // max length of a line
 
 char *readNextLine(const char *fileContent)
 {

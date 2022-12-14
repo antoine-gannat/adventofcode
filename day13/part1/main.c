@@ -5,7 +5,9 @@
 
 #define PACKET_TYPE_ARRAY 1
 #define PACKET_TYPE_NUMBER 2
-#define MAX_CHILDREN 100
+#define MAX_CHILDREN 300
+
+#define UNKNOWN -1
 
 typedef struct s_packet
 {
@@ -78,6 +80,58 @@ static void addChildren(t_packet *parent, t_packet *child)
   }
 }
 
+static int isInRightOrder(t_packet *pair1, t_packet *pair2)
+{
+  // compare each children of the pairs
+  for (int i = 0; i < MAX_CHILDREN; i++)
+  {
+    t_packet *p1 = pair1->children[i];
+    t_packet *p2 = pair2->children[i];
+
+    // if we run out of items in pair 1
+    if (p1 == NULL && p2 != NULL)
+      return TRUE;
+    // if we run out of items in pair 2
+    if (p1 != NULL && p2 == NULL)
+      return FALSE;
+    // if we run out of items in both
+    if (p1 == NULL && p2 == NULL)
+      break;
+
+    // if we are trying to compare a number and an array, change the type of the number to array
+    if (p1->type == PACKET_TYPE_NUMBER && p2->type == PACKET_TYPE_ARRAY)
+    {
+      t_packet *newPacket = packetFactory(PACKET_TYPE_ARRAY);
+      addChildren(newPacket, p1);
+      p1 = pair1->children[i] = newPacket;
+    }
+    else if (p1->type == PACKET_TYPE_ARRAY && p2->type == PACKET_TYPE_NUMBER)
+    {
+      t_packet *newPacket = packetFactory(PACKET_TYPE_ARRAY);
+      addChildren(newPacket, p2);
+      p2 = pair2->children[i] = newPacket;
+    }
+
+    if (p1->type == PACKET_TYPE_ARRAY || p2->type == PACKET_TYPE_ARRAY)
+    {
+      const int res = isInRightOrder(p1, p2);
+      if (res == FALSE)
+        return FALSE;
+      else if (res == TRUE)
+        return TRUE;
+      // continue if UNKNOWN
+    }
+    else
+    {
+      if (p1->value > p2->value)
+        return FALSE;
+      else if (p1->value < p2->value)
+        return TRUE;
+    }
+  }
+  return UNKNOWN;
+}
+
 int main()
 {
   char *fileContent = readFile("input.txt");
@@ -92,6 +146,8 @@ int main()
 
   char *line;
   int pairToggle = 0;
+  int pairCount = 0;
+  int solution = 0;
   while ((line = readNextLine(fileContent)) != NULL)
   {
     int numberJustRead = FALSE;
@@ -102,7 +158,6 @@ int main()
       // create new packet with array type
       if (line[i] == '[')
       {
-        // printf("new packet (array)\n");
         t_packet *newPacket = packetFactory(PACKET_TYPE_ARRAY);
         addChildren(currentPacket, newPacket);
         currentPacket = newPacket;
@@ -110,14 +165,12 @@ int main()
       }
       else if (line[i] == ']')
       {
-        // printf("end packet (array)\n");
         currentPacket = currentPacket->parent;
         numberJustRead = FALSE;
       }
       // create new number packet
       else if (line[i] >= '0' && line[i] <= '9' && !numberJustRead)
       {
-        // printf("new packet (number)\n");
         t_packet *newPacket = packetFactory(PACKET_TYPE_NUMBER);
         numberJustRead = TRUE;
         sscanf(line + i, "%d", &newPacket->value);
@@ -129,10 +182,18 @@ int main()
     // reset, analyze new pair
     if (strlen(line) == 0)
     {
-      displayPacket(pair1->children[0]);
-      printf("\n");
-      displayPacket(pair2->children[0]);
-      printf("\n\n");
+      // printf("Comparing:\n");
+      // displayPacket(pair1);
+      // displayPacket(pair2);
+      // printf("\n");
+      pairCount++;
+      if (isInRightOrder(pair1, pair2))
+      {
+        printf("Pair %d is in right order\n", pairCount);
+        solution += pairCount;
+      }
+      else
+        printf("Pair %d is NOT in right order\n", pairCount);
       freePacket(pair1);
       freePacket(pair2);
       pair1 = packetFactory(PACKET_TYPE_ARRAY);
@@ -141,10 +202,15 @@ int main()
     }
     free(line);
   }
-  displayPacket(pair1->children[0]);
-  printf("\n");
-  displayPacket(pair2->children[0]);
-  printf("\n");
+  pairCount++;
+  if (isInRightOrder(pair1, pair2))
+  {
+    printf("Pair %d is in right order\n", pairCount);
+    solution += pairCount;
+  }
+  else
+    printf("Pair %d is NOT in right order\n", pairCount);
+  printf("Solution %d\n", solution);
 
   freePacket(pair1);
   freePacket(pair2);
