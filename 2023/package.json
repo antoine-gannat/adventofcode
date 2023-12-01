@@ -1,0 +1,17 @@
+{
+  "name": "2023",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "watch": "tsc --watch",
+    "start": "node bin/run.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.1"
+  }
+}
