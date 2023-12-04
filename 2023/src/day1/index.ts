@@ -1,5 +1,4 @@
-import * as fs from "fs";
-import path = require("path");
+import { read } from "../utils";
 
 const exceptionMap: Record<string, [string, string]> = {
   oneight: ["one", "eight"],
@@ -41,9 +40,7 @@ function findNumbersInLine(line: string): string[] {
   return numbers.map((number) => stringToNumberMap[number] ?? number);
 }
 
-const fileContent = fs
-  .readFileSync(path.join(__dirname, "..", "..", "inputs", "day1.txt"), "utf8")
-  .toLowerCase();
+const fileContent = read(1);
 
 const lines = fileContent.split("\n");
 
