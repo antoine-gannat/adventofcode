@@ -13,7 +13,7 @@ interface IMap {
 function mapSourceToDestination(source: number, map: IMap): number {
   // find a range that matches the source
   const range = map.ranges.find(
-    (range) => source >= range.source && source <= range.source + range.range
+    (range) => source >= range.source && source < range.source + range.range
   );
   // if no range is found, keep the source
   if (!range) {
@@ -60,24 +60,12 @@ fileContent.slice(1).forEach((line) => {
   }
 });
 
-function percentage(partialValue: number, totalValue: number) {
-  return (100 * partialValue) / totalValue;
-}
-
 let lowestLocation = Number.MAX_SAFE_INTEGER;
 // go through each seed
 for (let i = 0; i + 1 < seeds.length; i += 2) {
   const start = seeds[i];
   const end = start + seeds[i + 1];
   for (let seed = start; seed <= end; seed++) {
-    (seed - start) % 1000000 === 0 &&
-      console.log(
-        "progress",
-        "[",
-        percentage(i, seeds.length),
-        "]",
-        percentage(seed - start, seeds[i + 1])
-      );
     let currentValue = seed;
     maps.forEach((map) => {
       currentValue = mapSourceToDestination(currentValue, map);
@@ -88,4 +76,4 @@ for (let i = 0; i + 1 < seeds.length; i += 2) {
   }
 }
 
-console.log({ lowestLocation });
+console.log("Result", { lowestLocation });
